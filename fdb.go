@@ -23,7 +23,6 @@ func Connect(ip string, port uint) (err error) {
 	return
 }
 
-// -------- generateOperand function --------
 func generateOperand(url string, tokens []string, metadatas map[string]string) ([]byte, error) {
 	var operandBuffer bytes.Buffer
 	//We have to generate the operand in the given order --> Key0  23  2  url0  3  2  PM0  3  23  TOKEN[0]0  3  TOKEN[1]0  3  TOKEN[2]0 . . . . . n
@@ -53,7 +52,6 @@ func generateOperand(url string, tokens []string, metadatas map[string]string) (
 
 	// Writing Tokens separated by Start and End of Text (2, 3)
 	for _, token := range tokens {
-		operandBuffer.WriteByte(2)
 		operandBuffer.WriteString(token)
 		operandBuffer.WriteByte(3)
 	}
@@ -62,7 +60,7 @@ func generateOperand(url string, tokens []string, metadatas map[string]string) (
 	return operandBuffer.Bytes(), nil
 }
 
-func ParseOperand(operand []byte) (string, map[string]string, []string, error) {
+func parseOperand(operand []byte) (string, map[string]string, []string, error) {
 	operandBuffer := bytes.NewBuffer(operand)
 
 	// ---------Extract the key (first 8 bytes)---------
@@ -133,16 +131,13 @@ func ParseOperand(operand []byte) (string, map[string]string, []string, error) {
 		if b == 23 {
 			return url, metadata, tokens, nil
 		}
-		if b != 2 {
-			return "", nil, nil, fmt.Errorf("expected Start of Text for token, got: %d", b)
-		}
 		var tokenBytes []byte
 		for {
-			b, err = operandBuffer.ReadByte()
 			if err != nil || b == 3 {
 				break
 			}
 			tokenBytes = append(tokenBytes, b)
+			b, err = operandBuffer.ReadByte()
 		}
 		tokens = append(tokens, string(tokenBytes))
 	}
