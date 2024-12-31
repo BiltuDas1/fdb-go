@@ -1,3 +1,3 @@
-# Go library for interacting with FDB
+# Go FDB
 
 This library helps you to interact with the fdb
