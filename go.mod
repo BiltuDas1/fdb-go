@@ -1,4 +1,4 @@
-module fdb-go
+module github.com/BiltuDas1/fdb-go
 
 go 1.23.2
 
